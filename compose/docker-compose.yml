@@ -1,0 +1,46 @@
+version: '2'
+services:
+  application:
+    image: euclid1990/ubuntu-server
+    volumes:
+      - ./my-project:/var/www/html/my-project
+  mariadb:
+    image: mariadb
+    ports:
+      - "3696:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: guest
+      MYSQL_PASSWORD: 123456Aa@
+    volumes:
+      - ./mariadb:/var/lib/mysql
+  php:
+    image: php:8.1.0-fpm
+    ports:
+      - "9696:9000"
+    volumes_from:
+      - application
+    links:
+      - mariadb:mysql
+  nginx:
+    image: nginx
+    ports:
+      - "8696:80"
+    links:
+      - php
+    volumes_from:
+      - application
+    volumes:
+      - ./logs/nginx/:/var/log/nginx
+      - ./nginx_conf:/etc/nginx/conf.d
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      ports:
+          - '8080:80'
+      restart: always
+      environment:
+          PMA_HOST: mariadb
+      depends_on:
+          - mariadb
+
