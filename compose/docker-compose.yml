@@ -17,6 +17,9 @@ services:
       - ./mariadb:/var/lib/mysql
   php:
     image: php:8.1.0-fpm
+    build:
+      context: .
+      dockerfile: php/Dockerfile
     ports:
       - "9696:9000"
     volumes_from:
